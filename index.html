@@ -1,59 +1,341 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+  <!-- 문서의 문자 인코딩을 UTF-8로 설정 (한글, 영어, 이모지 모두 정상 표시) -->
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- displays site properly based on user's device -->
+  <!-- 모바일 기기에서 화면 너비에 맞게 자동으로 맞추도록 설정 -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- 검색엔진이 이 페이지를 결과로 보여줄 때 쓰는 설명 (SEO) -->
+  <meta name="description"
+    content="Loopstudios - Leader in interactive VR. We produce world-class virtual reality projects for the best companies globally.">
 
+  <!-- 브라우저 탭에 표시될 페이지 제목 -->
+  <title>Loopstudios | Immersive VR Experiences</title>
+
+  <!-- 브라우저 탭 아이콘 (파비콘) -->
   <link rel="icon" type="image/png" sizes="32x32" href="./images/favicon-32x32.png">
-  
-  <title>Frontend Mentor | Loopstudios landing page</title>
 
-  <!-- Feel free to remove these styles or customise in your own stylesheet 👍 -->
-  <style>
-    .attribution { font-size: 11px; text-align: center; }
-    .attribution a { color: hsl(228, 45%, 44%); }
-  </style>
+  <!-- Google Fonts: Josefin Sans(제목용, 가중치 300)와 Alata(본문용, 가중치 400) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Alata&family=Josefin+Sans:wght@300&display=swap"
+    rel="stylesheet">
+
+  <!-- 외부 CSS 파일 연결 -->
+  <link rel="stylesheet" href="./style.css">
 </head>
+
 <body>
-  About
-  Careers
-  Events
-  Products
-  Support
 
-  Immersive experiences that deliver
+  <!-- ====================================================
+       1. 헤더 + 히어로 영역 (Header & Hero Section)
+       ====================================================
+       건물의 1층 로비 + 외벽 간판처럼, 로고와 내비게이션,
+       그리고 페이지 인상을 결정하는 대형 배경 이미지 영역.
+  -->
+  <header class="header" role="banner">
+    <!-- 배경 이미지 위에 깔리는 어두운 그라디언트 오버레이 (텍스트 가독성 향상) -->
+    <div class="header__overlay" aria-hidden="true"></div>
 
-  The leader in interactive VR
+    <!-- 내비게이션 바: 로고 + 메뉴 링크 또는 햄버거 버튼 -->
+    <nav class="nav" aria-label="주요 내비게이션">
+      <!-- 로고: 홈으로 돌아가는 링크 역할도 함 -->
+      <a href="/" class="nav__logo" aria-label="Loopstudios 홈으로 이동">
+        <img src="./images/logo.svg" alt="Loopstudios" width="192" height="32">
+      </a>
 
-  Founded in 2011, Loopstudios has been producing world-class virtual reality 
-  projects for some of the best companies around the globe. Our award-winning 
-  creations have transformed businesses through digital experiences that bind 
-  to their brand.
+      <!-- 데스크탑용 메뉴 링크 목록 (모바일에서는 숨겨짐) -->
+      <ul class="nav__links" role="list">
+        <li><a href="#about" class="nav__link">About</a></li>
+        <li><a href="#careers" class="nav__link">Careers</a></li>
+        <li><a href="#events" class="nav__link">Events</a></li>
+        <li><a href="#products" class="nav__link">Products</a></li>
+        <li><a href="#support" class="nav__link">Support</a></li>
+      </ul>
 
-  Our creations
+      <!-- 모바일용 햄버거 버튼 (데스크탑에선 숨겨짐) -->
+      <!-- aria-expanded: 메뉴가 열려있는지(true) 닫혀있는지(false) 스크린 리더에 알림 -->
+      <!-- aria-controls: 이 버튼이 어떤 요소를 제어하는지 연결 -->
+      <button class="nav__hamburger" id="hamburger-btn" aria-label="모바일 메뉴 열기" aria-expanded="false"
+        aria-controls="mobile-menu">
+        <img src="./images/icon-hamburger.svg" alt="" aria-hidden="true" width="24" height="16">
+      </button>
+    </nav>
 
-  See all
+    <!-- 히어로 섹션: 페이지의 첫인상을 결정하는 대형 텍스트 영역 -->
+    <div class="hero">
+      <!-- 흰색 테두리 박스 안에 들어가는 메인 슬로건 -->
+      <div class="hero__text-box">
+        <!-- Text Preset 1: Josefin Sans Light 72px, 대문자 -->
+        <h1 class="hero__title">Immersive <br>experiences <br>that deliver</h1>
+      </div>
+    </div>
+  </header>
 
-  Deep earth
-  Night arcade
-  Soccer team VR
-  The grid
-  From up above VR
-  Pocket borealis
-  The curiosity
-  Make it fisheye
+  <!-- ====================================================
+       2. 모바일 전체화면 메뉴 오버레이 (Mobile Menu Overlay)
+       ====================================================
+       햄버거 버튼 클릭 시 화면 전체를 덮는 검은색 메뉴판.
+       JS로 'is-open' 클래스를 붙였다 뗐다 해서 열고 닫음.
+  -->
+  <div class="mobile-menu" id="mobile-menu" role="dialog" aria-modal="true" aria-label="모바일 내비게이션 메뉴"
+    aria-hidden="true">
+    <!-- 모바일 메뉴 상단: 로고 + 닫기 버튼 -->
+    <div class="mobile-menu__header">
+      <a href="/" class="mobile-menu__logo" aria-label="Loopstudios 홈으로 이동">
+        <img src="./images/logo.svg" alt="Loopstudios" width="192" height="32">
+      </a>
+      <!-- X 모양 닫기 버튼 -->
+      <button class="mobile-menu__close" id="close-btn" aria-label="모바일 메뉴 닫기">
+        <img src="./images/icon-close.svg" alt="" aria-hidden="true" width="20" height="20">
+      </button>
+    </div>
 
-  About
-  Careers
-  Events
-  Products
-  Support
-
-  © 2021 Loopstudios. All rights reserved.
-
-  <div class="attribution">
-    Challenge by <a href="https://www.frontendmentor.io?ref=challenge" target="_blank">Frontend Mentor</a>. 
-    Coded by <a href="#">Your Name Here</a>.
+    <!-- 모바일 메뉴 링크 목록: 큰 글씨, Josefin Sans, 왼쪽 정렬 -->
+    <ul class="mobile-menu__links" role="list">
+      <li><a href="#about" class="mobile-menu__link">About</a></li>
+      <li><a href="#careers" class="mobile-menu__link">Careers</a></li>
+      <li><a href="#events" class="mobile-menu__link">Events</a></li>
+      <li><a href="#products" class="mobile-menu__link">Products</a></li>
+      <li><a href="#support" class="mobile-menu__link">Support</a></li>
+    </ul>
   </div>
+
+  <!-- ====================================================
+       3. 메인 콘텐츠 영역
+  ==================================================== -->
+  <main id="main-content">
+
+    <!-- --------------------------------------------------
+         3-1. 회사 소개 섹션 (Interactive VR Section)
+         --------------------------------------------------
+         VR 헤드셋 이미지 + 제목 + 설명문이 들어가는 영역.
+         모바일: 세로 배치 / 데스크탑: 이미지 왼쪽, 텍스트 오른쪽
+    -->
+    <section class="interactive" aria-labelledby="interactive-title">
+      <!-- VR 체험 이미지: 모바일용은 mobile 폴더, 데스크탑용은 desktop 폴더 -->
+      <!-- <picture> 태그: 화면 크기에 따라 적절한 이미지를 자동으로 선택 -->
+      <picture class="interactive__picture">
+        <!-- 화면 너비가 768px 이상이면 데스크탑 이미지를 사용 -->
+        <source srcset="./images/desktop/image-interactive.jpg" media="(min-width: 768px)">
+        <!-- 기본값 (모바일): 모바일 이미지를 사용 -->
+        <img class="interactive__image" src="./images/mobile/image-interactive.jpg" alt="VR 헤드셋을 착용하고 가상 현실을 체험하는 사람"
+          width="731" height="500">
+      </picture>
+
+      <!-- 회사 소개 텍스트 박스 (데스크탑에서 이미지 위에 살짝 겹침) -->
+      <div class="interactive__content">
+        <!-- Text Preset 2: Josefin Sans Light 48px, 대문자 -->
+        <h2 class="interactive__title" id="interactive-title">The leader <br>in interactive VR</h2>
+        <!-- Text Preset 6: Alata Regular 15px, 줄높이 1.65 -->
+        <p class="interactive__body">
+          Founded in 2011, Loopstudios has been producing world-class virtual reality
+          projects for some of the best companies around the globe. Our award-winning
+          creations have transformed businesses through digital experiences that bind
+          to their brand.
+        </p>
+      </div>
+    </section>
+
+    <!-- --------------------------------------------------
+         3-2. 갤러리 섹션 (Our Creations Section)
+         --------------------------------------------------
+         8개의 이미지 카드가 그리드(바둑판) 형태로 배치됨.
+         모바일: 1열 세로 배치 / 데스크탑: 4열 2행 그리드
+    -->
+    <section class="creations" aria-labelledby="creations-title">
+      <!-- 섹션 상단: 제목 + SEE ALL 버튼 (데스크탑에서 양쪽 끝에 배치) -->
+      <div class="creations__header">
+        <!-- Text Preset 2: Josefin Sans Light 48px, 대문자 -->
+        <h2 class="creations__title" id="creations-title">Our creations</h2>
+        <!-- SEE ALL 버튼: 검은색 테두리만 있는 아웃라인 스타일 -->
+        <!-- 모바일에서는 갤러리 아래에, 데스크탑에서는 제목 옆 오른쪽에 위치 -->
+        <a href="#" class="btn btn--outline creations__see-all--desktop" aria-label="모든 창작물 보기">See all</a>
+      </div>
+
+      <!-- 이미지 카드 그리드: CSS Grid로 레이아웃 제어 -->
+      <ul class="creations__grid" role="list">
+
+        <!-- 카드 1: Deep Earth -->
+        <li class="creations__item">
+          <a href="#" class="creations__card" aria-label="Deep Earth VR 체험 보기">
+            <!-- 모바일/데스크탑 이미지 반응형 처리 -->
+            <picture>
+              <source srcset="./images/desktop/image-deep-earth.jpg" media="(min-width: 768px)">
+              <img class="creations__card-image" src="./images/mobile/image-deep-earth.jpg" alt="심해 지구 내부를 탐험하는 VR 체험"
+                loading="lazy">
+            </picture>
+            <!-- 이미지 위에 어두운 그라디언트 오버레이 (텍스트 가독성) -->
+            <div class="creations__card-overlay" aria-hidden="true"></div>
+            <!-- 카드 제목: 왼쪽 하단에 흰색으로 배치 -->
+            <span class="creations__card-title">Deep earth</span>
+          </a>
+        </li>
+
+        <!-- 카드 2: Night Arcade -->
+        <li class="creations__item">
+          <a href="#" class="creations__card" aria-label="Night Arcade VR 체험 보기">
+            <picture>
+              <source srcset="./images/desktop/image-night-arcade.jpg" media="(min-width: 768px)">
+              <img class="creations__card-image" src="./images/mobile/image-night-arcade.jpg"
+                alt="밤의 아케이드를 배경으로 한 VR 체험" loading="lazy">
+            </picture>
+            <div class="creations__card-overlay" aria-hidden="true"></div>
+            <span class="creations__card-title">Night arcade</span>
+          </a>
+        </li>
+
+        <!-- 카드 3: Soccer Team VR -->
+        <li class="creations__item">
+          <a href="#" class="creations__card" aria-label="Soccer Team VR 체험 보기">
+            <picture>
+              <source srcset="./images/desktop/image-soccer-team.jpg" media="(min-width: 768px)">
+              <img class="creations__card-image" src="./images/mobile/image-soccer-team.jpg"
+                alt="축구팀 선수들과 함께하는 VR 스포츠 체험" loading="lazy">
+            </picture>
+            <div class="creations__card-overlay" aria-hidden="true"></div>
+            <span class="creations__card-title">Soccer team VR</span>
+          </a>
+        </li>
+
+        <!-- 카드 4: The Grid -->
+        <li class="creations__item">
+          <a href="#" class="creations__card" aria-label="The Grid VR 체험 보기">
+            <picture>
+              <source srcset="./images/desktop/image-grid.jpg" media="(min-width: 768px)">
+              <img class="creations__card-image" src="./images/mobile/image-grid.jpg" alt="미래적인 그리드 세계를 탐험하는 VR 체험"
+                loading="lazy">
+            </picture>
+            <div class="creations__card-overlay" aria-hidden="true"></div>
+            <span class="creations__card-title">The grid</span>
+          </a>
+        </li>
+
+        <!-- 카드 5: From Up Above VR -->
+        <li class="creations__item">
+          <a href="#" class="creations__card" aria-label="From Up Above VR 체험 보기">
+            <picture>
+              <source srcset="./images/desktop/image-from-above.jpg" media="(min-width: 768px)">
+              <img class="creations__card-image" src="./images/mobile/image-from-above.jpg" alt="하늘 위에서 아래를 내려다보는 VR 체험"
+                loading="lazy">
+            </picture>
+            <div class="creations__card-overlay" aria-hidden="true"></div>
+            <span class="creations__card-title">From up above VR</span>
+          </a>
+        </li>
+
+        <!-- 카드 6: Pocket Borealis -->
+        <li class="creations__item">
+          <a href="#" class="creations__card" aria-label="Pocket Borealis VR 체험 보기">
+            <picture>
+              <source srcset="./images/desktop/image-pocket-borealis.jpg" media="(min-width: 768px)">
+              <img class="creations__card-image" src="./images/mobile/image-pocket-borealis.jpg"
+                alt="손안에서 즐기는 오로라 VR 체험" loading="lazy">
+            </picture>
+            <div class="creations__card-overlay" aria-hidden="true"></div>
+            <span class="creations__card-title">Pocket borealis</span>
+          </a>
+        </li>
+
+        <!-- 카드 7: The Curiosity -->
+        <li class="creations__item">
+          <a href="#" class="creations__card" aria-label="The Curiosity VR 체험 보기">
+            <picture>
+              <source srcset="./images/desktop/image-curiosity.jpg" media="(min-width: 768px)">
+              <img class="creations__card-image" src="./images/mobile/image-curiosity.jpg" alt="호기심을 자극하는 탐험 VR 체험"
+                loading="lazy">
+            </picture>
+            <div class="creations__card-overlay" aria-hidden="true"></div>
+            <span class="creations__card-title">The curiosity</span>
+          </a>
+        </li>
+
+        <!-- 카드 8: Make It Fisheye -->
+        <li class="creations__item">
+          <a href="#" class="creations__card" aria-label="Make It Fisheye VR 체험 보기">
+            <picture>
+              <source srcset="./images/desktop/image-fisheye.jpg" media="(min-width: 768px)">
+              <img class="creations__card-image" src="./images/mobile/image-fisheye.jpg" alt="어안렌즈 효과로 바라보는 독특한 VR 체험"
+                loading="lazy">
+            </picture>
+            <div class="creations__card-overlay" aria-hidden="true"></div>
+            <span class="creations__card-title">Make it fisheye</span>
+          </a>
+        </li>
+
+      </ul>
+
+      <!-- SEE ALL 버튼: 모바일에서만 갤러리 아래에 보임 -->
+      <div class="creations__footer">
+        <a href="#" class="btn btn--outline creations__see-all--mobile" aria-label="모든 창작물 보기">See all</a>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ====================================================
+       4. 푸터 영역 (Footer)
+       ====================================================
+       검은색 배경에 로고, 메뉴, 소셜 아이콘, 저작권 문구가 담긴 하단 영역.
+       모바일: 세로 가운데 정렬 / 데스크탑: 2단 그리드 레이아웃
+  -->
+  <footer class="footer" role="contentinfo">
+    <div class="footer__inner">
+
+      <!-- 푸터 좌측/상단 영역: 로고 + 내비게이션 링크 -->
+      <div class="footer__left">
+        <!-- 푸터 로고 -->
+        <a href="/" class="footer__logo" aria-label="Loopstudios 홈으로 이동">
+          <img src="./images/logo.svg" alt="Loopstudios" width="192" height="32">
+        </a>
+        <!-- 푸터 내비게이션 링크 목록 -->
+        <nav aria-label="푸터 내비게이션">
+          <ul class="footer__links" role="list">
+            <li><a href="#about" class="footer__link">About</a></li>
+            <li><a href="#careers" class="footer__link">Careers</a></li>
+            <li><a href="#events" class="footer__link">Events</a></li>
+            <li><a href="#products" class="footer__link">Products</a></li>
+            <li><a href="#support" class="footer__link">Support</a></li>
+          </ul>
+        </nav>
+      </div>
+
+      <!-- 푸터 우측/하단 영역: 소셜 아이콘 + 저작권 -->
+      <div class="footer__right">
+        <!-- 소셜 미디어 아이콘 목록 -->
+        <ul class="footer__socials" role="list">
+          <li>
+            <a href="#" class="footer__social-link" aria-label="Facebook 페이지로 이동">
+              <img src="./images/icon-facebook.svg" alt="" aria-hidden="true" width="20" height="20">
+            </a>
+          </li>
+          <li>
+            <a href="#" class="footer__social-link" aria-label="Twitter 페이지로 이동">
+              <img src="./images/icon-twitter.svg" alt="" aria-hidden="true" width="20" height="20">
+            </a>
+          </li>
+          <li>
+            <a href="#" class="footer__social-link" aria-label="Pinterest 페이지로 이동">
+              <img src="./images/icon-pinterest.svg" alt="" aria-hidden="true" width="20" height="20">
+            </a>
+          </li>
+          <li>
+            <a href="#" class="footer__social-link" aria-label="Instagram 페이지로 이동">
+              <img src="./images/icon-instagram.svg" alt="" aria-hidden="true" width="20" height="20">
+            </a>
+          </li>
+        </ul>
+        <!-- 저작권 문구 -->
+        <p class="footer__copy">&copy; 2021 Loopstudios. All rights reserved.</p>
+      </div>
+
+    </div>
+  </footer>
+
+  <!-- JavaScript 파일 연결: body 맨 하단에 두어 HTML이 모두 그려진 뒤 실행되도록 함 -->
+  <script src="./script.js"></script>
+
 </body>
+
 </html>
