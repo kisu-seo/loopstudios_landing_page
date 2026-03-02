@@ -1,130 +1,171 @@
-/* ==================================================
-   Loopstudios Landing Page - style.css
-   작성 기준: 모바일 우선(Mobile-First) 전략
-   즉, 먼저 모바일 스타일을 기본으로 작성하고,
-   @media 쿼리로 화면이 넓어질 때 데스크탑 스타일을 추가함.
-================================================== */
+/* ======================================================================
+   Loopstudios Landing Page — style.css
+   ======================================================================
+   작성 전략: 모바일 우선(Mobile-First)
+   순서: 1.변수 → 2.리셋 → 3.공통 컴포넌트 → 4.레이아웃 →
+         5.섹션 스타일 → 6.태블릿(768px+) → 7.데스크탑(1024px+)
+====================================================================== */
 
-/* ==================================================
+
+/* ======================================================================
    1. 디자인 시스템 변수 (Design Tokens)
-   ==================================================
-   마치 레고 블록의 기본 색상표처럼,
-   프로젝트 전체에서 사용할 색상·폰트·간격을 여기에 정의함.
-   한 곳만 수정하면 전체 디자인이 바뀌는 편리한 시스템!
+   ======================================================================
+   [왜 이렇게 분리했는가?]
+   마치 한 브랜드의 '브랜드북'처럼, 색상·폰트·간격을 한 곳에서 관리합니다.
+   "Deep earth 카드 색상을 바꿔줘"라는 요청이 오면,
+   수백 줄을 찾아 헤매지 않고 이 :root 블록의 변수 하나만 수정하면 됩니다.
+
+   [BEM과의 시너지]
+   BEM 클래스(예: .creations__card-title)가 구체적인 컴포넌트의 구조를 담당하고,
+   여기 :root 변수들은 그 컴포넌트에 들어갈 '재료(색상, 간격)'를 공급합니다.
+   덕분에 디자이너가 색상을 바꿔도 개발자는 변수 값만 수정하면 됩니다.
 */
 :root {
-    /* --- 색상 변수 (Colors) --- */
+    /* --- 색상 (Colors) --- */
     --color-white: #FFFFFF;
-    /* 흰색: 텍스트, 오버레이 배경 */
     --color-black: #000000;
-    /* 검정: 배경, 모바일 메뉴, 오버레이 */
     --color-grey-200: #D8D8D8;
-    /* 연회색: 구분선, 비활성 상태 */
-    --color-blue-100: #E5EAF1;
-    /* 연파랑(진한): 카드 배경 */
-    --color-blue-50: #F6FAFF;
-    /* 연파랑(연한): 호버 강조 배경 */
 
-    /* --- 폰트 변수 (Font Families) --- */
+    /* --- 반투명 색상: rgba처럼 쓰이지만 의미를 담아 변수로 관리 --- */
+    --color-overlay-dark: rgba(0, 0, 0, 0.6);
+    /* 카드 그라데이션 진한 끝 */
+    --color-overlay-light: rgba(0, 0, 0, 0.0);
+    /* 카드 그라데이션 투명 끝 */
+    --color-body-text: rgba(0, 0, 0, 0.5);
+    /* 본문 텍스트용 반투명 검정 */
+    --color-copy-text: rgba(255, 255, 255, 0.5);
+    /* 저작권 문구용 반투명 흰색 */
+    --color-hover-overlay: rgba(255, 255, 255, 0.7);
+    /* 카드 호버 시 흰색 오버레이 */
+
+    /* --- 폰트 패밀리 (Font Families) --- */
     --font-heading: 'Josefin Sans', sans-serif;
     /* 제목용: 얇고 우아한 폰트 */
     --font-body: 'Alata', sans-serif;
     /* 본문용: 동글동글하고 읽기 편한 폰트 */
 
-    /* --- 폰트 크기 변수 (Font Sizes) --- */
+    /* --- 폰트 크기 프리셋 (Font Size Presets) --- */
     --text-preset-1: 4.5rem;
     /* 72px: 히어로 최대 제목 */
     --text-preset-2: 3rem;
     /* 48px: 대형 섹션 제목 */
     --text-preset-3: 2.5rem;
-    /* 40px: 중형 섹션 제목 */
+    /* 40px: 중형 섹션 제목(모바일 히어로) */
     --text-preset-4: 2rem;
-    /* 32px: 소형 섹션 제목 */
+    /* 32px: 데스크탑 카드 제목 */
     --text-preset-5: 1.5rem;
-    /* 24px: 카드 제목 */
+    /* 24px: 모바일/태블릿 카드 제목 */
     --text-preset-6: 0.9375rem;
-    /* 15px: 본문 텍스트 */
+    /* 15px: 본문 텍스트, 데스크탑 내비 */
     --text-preset-7: 0.875rem;
-    /* 14px: 내비게이션 라벨 */
+    /* 14px: 모바일 내비 링크, 버튼 라벨 */
 
-    /* --- 간격 변수 (Spacing Tokens, 8px 배수 체계) --- */
+    /* --- 기본 간격 토큰 (Spacing Tokens, 8px 배수 체계) --- */
+    /*
+      [왜 8px 배수를 쓰는가?]
+      대부분의 모니터 해상도가 8의 배수로 나뉘어, 간격을 8px 단위로 맞추면
+      어떤 기기에서도 선명하게 렌더링됩니다. 또한 디자이너와 개발자가
+      "이 요소 간격을 spacing-300(24px)만큼 줘" 라고 명확하게 소통할 수 있습니다.
+    */
     --spacing-0: 0px;
-    /* 여백 없음 */
     --spacing-100: 8px;
-    /* XS: 아이콘-텍스트 사이 작은 간격 */
     --spacing-200: 16px;
-    /* SM: 버튼 패딩, 항목 사이 기본 간격 */
     --spacing-300: 24px;
-    /* MD: 카드 내부 패딩 */
     --spacing-400: 32px;
-    /* LG: 섹션 내부 여백 */
     --spacing-500: 40px;
-    /* XL: 섹션 간 여백 */
     --spacing-600: 48px;
-    /* 2XL: 헤더/푸터 패딩 */
     --spacing-800: 64px;
-    /* 3XL: 주요 섹션 구분 */
     --spacing-1000: 80px;
-    /* 4XL: 페이지 최대 여백 */
+
+    /* --- 컴포넌트별 특수 간격 (Component-specific Spacing) --- */
+    /* 이름을 붙여두면, 나중에 디자인이 바뀌어도 딱 한 곳만 수정하면 됩니다! */
+
+    /*
+      [매직 넘버 출처]
+      --nav-mb-mobile: 163px
+        → 디자인 시안(모바일 375px 기준)에서 내비바 하단 ~ 히어로 슬로건 상단까지의
+          여백을 그대로 픽셀로 반영한 값. 8px 배수 체계에서 벗어나지만,
+          시안 픽셀 퍼펙트(Pixel Perfect) 구현을 최우선으로 해서 이 값을 사용.
+    */
+    --nav-mb-mobile: 163px;
+    /* 모바일: 내비바 하단 여백 */
+    --nav-mb-tablet: 130px;
+    /* 태블릿: 내비바 하단 여백 */
+    --nav-mb-desktop: 127px;
+    /* 데스크탑: 내비바 하단 여백 */
+    --hero-mb-mobile: 223px;
+    /* 모바일: 히어로 하단 여백 */
+    --hero-mb-tablet: 123px;
+    /* 태블릿: 히어로 하단 여백 */
+
+    /*
+      [매직 넘버 출처]
+      --interactive-content-width: 541px
+        → 디자인 시안 데스크탑(1440px) 기준, 텍스트 박스의 고정 너비.
+          내부 패딩 96px + 실제 텍스트 영역 445px = 541px 로 계산됨.
+
+      --interactive-image-width: 731px
+        → 디자인 시안 데스크탑(1440px) 기준, VR 이미지의 고정 너비.
+          전체 컨텐츠 영역(1440px - 좌우패딩 165px×2 = 1110px)에서
+          이미지가 차지하는 비율로 결정된 값.
+    */
+    --interactive-content-width: 541px;
+    /* 데스크탑: 인터랙티브 콘텐츠 박스 너비 */
+    --interactive-image-width: 731px;
+    /* 데스크탑: 인터랙티브 이미지 너비 */
+    --hero-max-width-desktop: 650px;
+    /* 데스크탑: 히어로 영역 최대 너비 */
 }
 
 
-/* ==================================================
+/* ======================================================================
    2. 전역 초기화 및 기본 설정 (Global Reset & Base)
-   ==================================================
-   브라우저마다 기본 스타일이 다르기 때문에,
-   마치 캔버스를 깨끗하게 지우듯이 초기화함.
+   ======================================================================
+   브라우저마다 기본 스타일이 달라서 생기는 문제를 방지하기 위해,
+   마치 캔버스를 깨끗이 닦듯 초기화합니다.
 */
 
-/* 모든 요소에 border-box 박스 모델 적용:
-   패딩/테두리가 요소 너비 안에 포함되어 계산이 편해짐 */
 *,
 *::before,
 *::after {
     box-sizing: border-box;
+    /* 패딩/테두리가 너비 계산에 포함되어 레이아웃이 편해짐 */
     margin: 0;
     padding: 0;
 }
 
-/* HTML 기본 폰트 크기: 대부분의 브라우저가 16px이므로 16px = 1rem */
 html {
     font-size: 16px;
+    /* 1rem = 16px */
 }
 
-/* 바디 기본 스타일 */
 body {
     font-family: var(--font-body);
-    /* 기본 폰트를 본문용으로 설정 */
     font-size: var(--text-preset-6);
-    /* 기본 글자 크기 15px */
     color: var(--color-black);
-    /* 기본 글자 색상은 검정 */
     background-color: var(--color-white);
-    /* 배경은 흰색 */
     -webkit-font-smoothing: antialiased;
     /* 폰트 렌더링을 더 매끄럽게 */
     overflow-x: hidden;
-    /* 가로 스크롤이 생기지 않도록 숨김 */
+    /* 가로 스크롤 방지 */
 }
 
-/* 목록 태그의 기본 점(bullet) 제거 */
 ul {
     list-style: none;
+    /* 목록의 기본 점(bullet) 제거 */
 }
 
-/* 링크 태그의 기본 밑줄 제거 */
 a {
     text-decoration: none;
+    /* 링크의 기본 밑줄 제거 */
 }
 
-/* 이미지가 부모 너비를 넘지 않도록 설정 */
 img {
     max-width: 100%;
     display: block;
-    /* 이미지 아래에 생기는 불필요한 여백(gap) 제거 */
+    /* 이미지 아래 생기는 불필요한 여백 제거 */
 }
 
-/* 버튼 기본 스타일 제거 */
 button {
     cursor: pointer;
     border: none;
@@ -132,55 +173,53 @@ button {
 }
 
 
-/* ==================================================
-   3. 접근성: 키보드 탐색자를 위한 포커스 링 스타일
-   ==================================================
-   마우스 대신 탭(Tab) 키로 사이트를 이동하는 사용자에게
-   현재 어디에 포커스가 있는지 시각적으로 표시해주는 테두리.
+/* ======================================================================
+   3. 접근성: 포커스 링 (Accessibility — Focus Ring)
+   ======================================================================
+   마우스 대신 탭(Tab) 키로 이동하는 사용자에게
+   현재 포커스 위치를 시각적으로 알려주는 테두리.
 */
 :focus-visible {
     outline: 2px solid var(--color-white);
-    /* 흰색 포커스 링 */
     outline-offset: 4px;
 }
 
 
-/* ==================================================
-   4. 공통 유틸리티 클래스 (Utility Classes)
-   ==================================================
-   여러 곳에서 반복되는 스타일을 하나의 클래스로 묶어놓은 것.
-   마치 요리의 '기본 양념'처럼, 필요한 곳에 쉽게 쓸 수 있음.
+/* ======================================================================
+   4. 공통 컴포넌트: 버튼 (Button Component)
+   ======================================================================
+   여러 곳에서 반복되는 버튼 스타일을 하나의 클래스로 묶어놓음.
+   마치 요리의 '기본 양념'처럼, 필요한 곳에 바로 활용 가능.
+
+   [BEM 클래스 구조의 장점]
+   .btn → Block: 버튼이라는 독립적인 컴포넌트
+   .btn--outline → Modifier: 아웃라인 스타일 변형
+   이처럼 BEM을 쓰면 "이 버튼은 아웃라인 버튼이다"가 클래스명만으로 명확해져서,
+   6개월 후에 코드를 처음 보는 개발자도 직관적으로 이해할 수 있습니다.
 */
 
-/* 버튼 공통 기본 스타일 */
+/* 버튼 베이스 스타일 */
 .btn {
     display: inline-block;
-    /* 인라인이지만 너비/높이 설정 가능 */
     font-family: var(--font-body);
-    /* Alata 폰트 */
     font-size: var(--text-preset-7);
     /* 14px */
     letter-spacing: 5px;
-    /* 자간 5px로 넓게 — 버튼 라벨 특유의 스타일 */
+    /* 자간이 넓어 버튼 고유의 세련된 느낌을 줌 */
     text-transform: uppercase;
-    /* 전부 대문자 */
     padding: var(--spacing-100) var(--spacing-500);
-    /* 위아래 8px, 좌우 40px */
+    /* 상하 8px, 좌우 40px */
     transition: background-color 0.3s ease, color 0.3s ease;
-    /* 부드러운 색상 전환 */
 }
 
-/* 아웃라인(테두리만 있는) 버튼 스타일 */
+/* 아웃라인(테두리만) 버튼 변형 */
 .btn--outline {
     color: var(--color-black);
-    /* 글자 색: 검정 */
     border: 1px solid var(--color-black);
-    /* 검정 테두리 */
     background-color: transparent;
-    /* 배경 없음(투명) */
 }
 
-/* 아웃라인 버튼 호버: 배경이 검정으로, 글자는 흰색으로 반전 */
+/* 아웃라인 버튼 호버: 배경과 글자 색이 반전 */
 .btn--outline:hover,
 .btn--outline:focus-visible {
     background-color: var(--color-black);
@@ -188,52 +227,35 @@ button {
 }
 
 
-/* ==================================================
-   5. 헤더 & 히어로 섹션 (Header & Hero)
-   ==================================================
-   배경 이미지 위에 어두운 오버레이를 씌우고,
-   로고, 내비게이션 버튼, 슬로건 텍스트를 배치하는 영역.
+/* ======================================================================
+   5. 헤더 & 히어로 섹션 (Header & Hero Section)
+   ======================================================================
+   배경 이미지, 어두운 오버레이, 로고, 내비게이션, 슬로건이 있는 영역.
 */
 
-/* 헤더 전체 컨테이너 */
+/* 헤더 컨테이너 */
 .header {
     position: relative;
-    /* 자식 요소(오버레이)를 이 기준으로 절대 배치 */
-    /* height: 100vh; */
-    /* 화면 전체 높이를 차지 */
-    /* min-height: 650px; */
-    /* 최소 높이 보장 */
-    /* display: flex;
-    flex-direction: column; */
-    /* 내비와 히어로 텍스트를 세로로 쌓음 */
+    max-height: 650px;
     padding: var(--spacing-500) var(--spacing-300);
-    /* 위아래 40px, 좌우 24px */
-
-    /* 배경 이미지 설정 */
+    /* 모바일: 상하 40px, 좌우 24px */
     background-image: url('./images/mobile/image-hero.jpg');
     background-size: cover;
-    /* 이미지가 영역을 꽉 채우도록 */
     background-position: center;
-    /* 이미지를 가운데 기준으로 보여줌 */
     background-repeat: no-repeat;
-    /* 이미지 반복 없음 */
 }
 
-/* 헤더 배경에 씌우는 어두운 그라디언트 오버레이
-   이 오버레이가 있어야 흰색 텍스트가 배경 이미지 위에서도 잘 보임 */
+/* 배경 그라데이션 오버레이: 흰색 텍스트 가독성 확보 */
 .header__overlay {
     position: absolute;
-    /* 부모(header) 기준으로 절대 위치 */
     inset: 0;
-    /* 상하좌우 0 = 부모 전체를 꽉 채움 */
     background: linear-gradient(to bottom,
             rgba(0, 0, 0, 0.6) 0%,
             rgba(0, 0, 0, 0.1) 60%,
             rgba(0, 0, 0, 0.0) 100%);
     pointer-events: none;
-    /* 이 오버레이는 화면에 보이기만 하고 클릭은 통과됨 */
+    /* 클릭/터치 이벤트가 오버레이를 통과하도록 */
     z-index: 0;
-    /* 오버레이는 배경 이미지 바로 위에만 위치 */
 }
 
 
@@ -241,81 +263,65 @@ button {
    5-1. 내비게이션 바 (Navigation Bar)
 */
 
-/* 내비 컨테이너: 내용물 전체를 가로로 정렬하고 양쪽 끝에 배치 */
 .nav {
     position: relative;
-    /* 오버레이 위에 표시되도록 z-index 설정을 위해 필요 */
     z-index: 10;
-    /* 오버레이(z-index: 0)보다 위에 표시 */
+    /* 오버레이보다 위에 표시 */
     display: flex;
     align-items: center;
-    /* 로고와 햄버거 버튼을 세로 중앙 정렬 */
     justify-content: space-between;
-    /* 로고는 왼쪽, 메뉴/버튼은 오른쪽으로 밀기 */
-    margin-bottom: 163px;
-    /* 내비게이션 바 하단에 163px의 여백을 추가하여, 
-       뒤따라오는 히어로 슬로건 텍스트와 충분한 거리를 둠 (디자인 시안 반영) */
+    margin-bottom: var(--nav-mb-mobile);
+    /* 163px: 내비바와 슬로건 사이 여백 (디자인 시안 모바일 375px 기준 픽셀 퍼펙트 값) */
 }
 
-/* 로고 이미지 */
+/* 로고 이미지 크기 */
 .nav__logo img {
     width: 144px;
-    /* 모바일에서의 로고 크기 */
     height: auto;
 }
 
-/* 데스크탑용 메뉴 링크 목록: 모바일에서는 숨김 */
+/* 데스크탑용 가로 메뉴 목록: 모바일에서는 숨김 */
 .nav__links {
     display: none;
-    /* 모바일에서는 보이지 않음 (데스크탑 미디어 쿼리에서 보임) */
     flex-direction: row;
     gap: var(--spacing-400);
-    /* 메뉴 항목 사이 간격 32px */
+    /* 메뉴 항목 간격 32px */
 }
 
 /* 데스크탑 내비 링크 개별 스타일 */
 .nav__link {
     font-family: var(--font-body);
-    /* Alata */
     font-size: var(--text-preset-7);
     /* 14px */
     color: var(--color-white);
-    /* 흰색 텍스트 */
     position: relative;
-    /* ::after 가상 요소 기준점 */
+    /* ::after 가상 요소의 기준점 */
     padding-bottom: var(--spacing-100);
     /* 밑줄 공간 확보 */
     transition: color 0.3s ease;
 }
 
-/* 데스크탑 내비 링크 호버 효과: 텍스트 아래에 흰색 밑줄이 나타남 */
+/* 내비 링크 호버 밑줄: 가운데에서 양쪽으로 퍼지는 효과 */
 .nav__link::after {
     content: '';
-    /* 내용 없는 가상 요소 */
     position: absolute;
     bottom: 0;
     left: 50%;
-    /* 가운데서 시작 */
     transform: translateX(-50%);
-    /* 정확히 가운데 정렬 */
     width: 0;
-    /* 처음엔 너비 0(안 보임) */
     height: 2px;
     background-color: var(--color-white);
     transition: width 0.3s ease;
-    /* 너비가 부드럽게 늘어남 */
 }
 
 .nav__link:hover::after,
 .nav__link:focus-visible::after {
     width: 50%;
-    /* 호버 시 너비가 늘어나 밑줄이 보임 */
 }
 
-/* 모바일 햄버거 버튼: 모바일에서만 보임 */
+/* 모바일 햄버거 버튼 */
 .nav__hamburger {
     display: flex;
-    /* 아이콘 이미지를 정렬하기 위해 */
     align-items: center;
     padding: 4px 0;
 }
@@ -325,91 +331,72 @@ button {
    5-2. 히어로 텍스트 박스 (Hero Content)
 */
 
-/* 히어로 컨테이너: 헤더 남은 공간을 모두 채우며 텍스트 박스를 배치 */
 .hero {
     position: relative;
     z-index: 10;
     flex: 1;
-    /* 남은 세로 공간을 모두 차지 */
     display: flex;
     align-items: flex-end;
-    /* 텍스트 박스를 하단에 배치 */
     justify-content: center;
-    /* 하단 여백 48px */
-    margin-bottom: 227px;
+    margin-bottom: var(--hero-mb-mobile);
+    /* 223px: 디자인 시안 모바일 375px 기준, 배경 이미지 하단 여백 픽셀 퍼펙트 값 */
 }
 
 /* 흰색 테두리 박스 */
 .hero__text-box {
     border: 2px solid var(--color-white);
-    /* 흰색 테두리 */
     padding: 18px 24px;
-    /* 내부 여백 24px */
-    /* max-width: 650px; */
     width: 100%;
-    /* 데스크탑에서 너무 넓어지지 않도록 최대 너비 제한 */
 }
 
-/* 히어로 제목 텍스트 스타일 (Text Preset 1) */
+/* 히어로 메인 슬로건 */
 .hero__title {
     font-family: var(--font-heading);
-    /* Josefin Sans */
     font-weight: 300;
-    /* Light 가중치 */
     font-size: var(--text-preset-3);
-    /* 40px: 중형 섹션 제목 스타일 적용 (기존 72px에서 변경) */
+    /* 모바일: 40px */
     line-height: 1;
-    /* 줄 높이 100% */
     text-transform: uppercase;
-    /* 전부 대문자 */
     color: var(--color-white);
-    /* 흰색 텍스트 */
 }
 
 
-/* ==================================================
+/* ======================================================================
    6. 모바일 전체화면 메뉴 (Mobile Menu Overlay)
-   ==================================================
-   화면 전체를 검은색으로 덮는 메뉴.
-   기본적으로 숨겨져 있다가, JS가 'is-open' 클래스를 붙이면 나타남.
+   ======================================================================
+   기본적으로 오른쪽 화면 밖에 숨겨져 있다가,
+   JS가 'is-open' 클래스를 붙이면 슬라이드인해서 나타남.
 */
 
 .mobile-menu {
     position: fixed;
-    /* 스크롤에 상관없이 항상 화면 위에 고정 */
     inset: 0;
-    /* 화면 전체를 꽉 채움 */
     background-color: var(--color-black);
-    /* 검정 배경 */
     z-index: 1000;
-    /* 모든 요소보다 위에 위치 */
+    /* 모든 요소보다 위에 */
     display: flex;
     flex-direction: column;
     padding: 40px 24px 0 24px;
-    /* 위아래 40px, 좌우 24px */
 
-    /* 기본 상태: 화면 밖(오른쪽)으로 숨겨두기 */
+    /* 기본 상태: 화면 오른쪽 밖으로 숨김 */
     transform: translateX(100%);
-    /* transform이 부드럽게 이동하도록 전환 효과 추가 */
     transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* 'is-open' 클래스가 붙으면 제자리로 이동해 나타남 */
+/* 'is-open' 클래스 추가 시 제자리로 이동 */
 .mobile-menu.is-open {
     transform: translateX(0);
 }
 
-/* 모바일 메뉴 상단 헤더 (로고 + 닫기 버튼) */
+/* 메뉴 상단 영역: 로고 + 닫기 버튼 */
 .mobile-menu__header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    /* 로고와 닫기 버튼을 양 끝으로 배치 */
     margin-bottom: 159px;
-    /* 메뉴 목록과의 간격 64px */
 }
 
-/* 모바일 메뉴 내 로고 크기 */
+/* 메뉴 내 로고 크기 */
 .mobile-menu__logo img {
     width: 144px;
     height: auto;
@@ -419,66 +406,54 @@ button {
 .mobile-menu__close {
     display: flex;
     align-items: center;
-
 }
 
-/* 모바일 메뉴 링크 목록 */
+/* 메뉴 링크 목록 */
 .mobile-menu__links {
     display: flex;
     flex-direction: column;
-    /* 세로로 나열 */
     gap: var(--spacing-300);
-    /* 메뉴 항목 사이 간격 24px */
+    /* 항목 간격 24px */
 }
 
-/* 모바일 메뉴 개별 링크 스타일
-   Text Preset 5: Josefin Sans Light, 24px, 대문자 */
+/* 메뉴 개별 링크: Josefin Sans Light, 24px, 대문자 */
 .mobile-menu__link {
     font-family: var(--font-heading);
-    /* Josefin Sans */
     font-weight: 300;
-    /* Light */
     font-size: var(--text-preset-5);
-    /* 24px: 기존 40px에서 조금 더 아담한 크기로 변경 */
+    /* 24px */
     text-transform: uppercase;
-    /* 대문자 */
     color: var(--color-white);
-    /* 흰색 */
     position: relative;
     display: inline-block;
     transition: opacity 0.2s ease;
 }
 
-/* 모바일 메뉴 링크 호버: 약간 투명하게 */
 .mobile-menu__link:hover {
     opacity: 0.7;
 }
 
-/* 메뉴가 열렸을 때 배경 스크롤 방지 */
+/* 메뉴가 열린 동안 배경 스크롤 방지 */
 body.menu-open {
     overflow: hidden;
-    /* 메뉴가 열려있는 동안 본문 스크롤 막기 */
 }
 
 
-/* ==================================================
+/* ======================================================================
    7. 인터랙티브 VR 소개 섹션 (Interactive Section)
-   ==================================================
-   VR 이미지 + 회사 소개 텍스트로 구성된 영역.
-   모바일: 세로 배치 / 데스크탑: 이미지 &텍스트 좌우 배치
+   ======================================================================
+   VR 이미지 + 회사 소개 텍스트로 구성.
+   모바일: 세로 배치 / 데스크탑: 이미지 고정 + 텍스트 절대 위치 겹침
 */
 
 .interactive {
     padding: 96px 24px;
-    /* 위아래 80px, 좌우 24px */
     display: flex;
     flex-direction: column;
-    /* 모바일: 세로 배치 */
     gap: var(--spacing-600);
-    /* 이미지와 텍스트 사이 간격 48px */
+    /* 이미지와 텍스트 간격 48px */
 }
 
-/* VR 이미지 */
 .interactive__picture {
     width: 100%;
 }
@@ -491,92 +466,81 @@ body.menu-open {
 /* 텍스트 콘텐츠 박스 */
 .interactive__content {
     text-align: center;
-    /* 모바일: 가운데 정렬 */
     display: flex;
     flex-direction: column;
     gap: var(--spacing-200);
-    /* 제목과 본문 사이 간격 16px */
+    /* 제목과 본문 간격 16px */
     padding: 0 24px;
-    /* 좌우에 24px의 패딩을 주어 텍스트가 화면 끝에 너무 붙지 않도록 더 넉넉한 여백 확보 */
 }
 
-/* 섹션 제목 (Text Preset 4) */
+/* 섹션 제목: Josefin Sans Light, 32px, 대문자 */
 .interactive__title {
     font-family: var(--font-heading);
-    /* Josefin Sans */
     font-weight: 300;
-    /* Light */
     font-size: var(--text-preset-4);
-    /* 32px: 소형 섹션 제목 스타일 적용 (기존 48px에서 변경) */
+    /* 모바일: 32px */
     line-height: 1;
-    /* 줄 높이 100% */
     text-transform: uppercase;
-    /* 대문자 */
     color: var(--color-black);
 }
 
-/* 본문 텍스트 (Text Preset 6) */
+/* 본문 텍스트: Alata, 15px */
 .interactive__body {
     font-family: var(--font-body);
-    /* Alata */
     font-size: var(--text-preset-6);
-    /* 15px */
     line-height: 1.65;
-    /* 넉넉한 줄 높이로 가독성 향상 */
-    color: rgba(0, 0, 0, 0.5);
-    /* 검정색(Black)에 불투명도 50%를 적용하여 부드러운 회색 느낌을 줌 */
+    color: var(--color-body-text);
+    /* rgba(0,0,0,0.5) */
 }
 
 
-/* ==================================================
+/* ======================================================================
    8. 갤러리 섹션 (Our Creations Section)
-   ==================================================
+   ======================================================================
    8개의 이미지 카드가 배치되는 영역.
-   모바일: 1열 세로 배치 / 데스크탑: 4열 x 2행 그리드
+   모바일: 1열 / 태블릿: 1열 유지 / 데스크탑: 4열 2행 그리드
 */
 
 .creations {
     padding: 0 var(--spacing-300) 98px;
-    /* 좌우 24px, 하단 80px */
+    /* 모바일: 좌우 24px, 하단 98px */
 }
 
 /* 섹션 상단: 제목 + SEE ALL 버튼 */
 .creations__header {
     display: flex;
     justify-content: center;
-    /* 모바일: 제목을 중앙 정렬 */
+    /* 모바일: 제목 중앙 정렬 */
     margin-bottom: 48px;
-    /* 제목과 그리드 사이 간격 40px */
 }
 
-/* 섹션 제목 (Text Preset 4) */
+/* 섹션 제목 */
 .creations__title {
     font-family: var(--font-heading);
     font-weight: 300;
     font-size: var(--text-preset-4);
-    /* 32px: 소형 섹션 제목 스타일 적용 (기존 48px에서 변경) */
+    /* 모바일: 32px */
     line-height: 1;
     text-transform: uppercase;
     color: var(--color-black);
 }
 
-/* 데스크탑 SEE ALL 버튼: 모바일에서는 숨김 */
+/* 데스크탑용 SEE ALL 버튼: 모바일에서 숨김 */
 .creations__see-all--desktop {
     display: none;
-    /* 모바일에서 숨기고, 데스크탑 미디어 쿼리에서 보임 */
 }
 
-/* --------------------------------------------------
-   이미지 카드 그리드
-*/
+/* 모바일용 SEE ALL 버튼: 모바일에서 보임 */
+.creations__see-all--mobile {
+    display: inline-block;
+}
 
-/* 모바일: 1열 배치 */
+/* 모바일: 1열 그리드 */
 .creations__grid {
     display: grid;
     grid-template-columns: 1fr;
-    /* 한 줄에 하나씩 */
     gap: var(--spacing-300);
-    /* 카드 사이 간격 24px */
+    /* 카드 간격 24px */
 }
 
 /* 개별 카드 아이템 */
@@ -584,64 +548,53 @@ body.menu-open {
     position: relative;
 }
 
-/* 카드 링크 컨테이너: 이미지와 텍스트를 하나의 클릭 영역으로 묶음 */
+/* 카드 링크 컨테이너 */
 .creations__card {
     display: block;
-    /* 블록 요소로 링크 전체가 클릭 영역이 됨 */
     position: relative;
-    /* 오버레이와 제목을 절대 위치로 배치하기 위한 기준 */
     overflow: hidden;
-    /* 이미지가 카드 밖으로 삐져나오지 않도록 숨김 */
+    /* 이미지가 카드 밖으로 삐져나오지 않도록 */
 }
 
 /* 카드 이미지 */
 .creations__card-image {
     width: 100%;
     height: 120px;
-    /* 모바일에서 카드 높이 */
+    /* 모바일 카드 높이 */
     object-fit: cover;
-    /* 이미지가 영역을 꽉 채우면서 비율 유지 */
     display: block;
-    /* 호버 시 이미지가 살짝 확대되는 효과 */
     transition: transform 0.4s ease, filter 0.4s ease;
 }
 
-/* 카드 호버: 이미지가 살짝 커지고 밝아짐 */
+/* 카드 호버: 이미지 확대 + 어둡게 */
 .creations__card:hover .creations__card-image,
 .creations__card:focus-visible .creations__card-image {
     transform: scale(1.05);
-    /* 5% 확대 */
     filter: brightness(0.4);
-    /* 이미지를 어둡게 해 오버레이 효과 */
 }
 
-/* 카드 어두운 오버레이 (왼쪽이 더 어둡고 오른쪽이 투명해지는 그라디언트) */
+/* 카드 어두운 그라데이션 오버레이 (모바일: 왼쪽이 더 어두움) */
 .creations__card-overlay {
     position: absolute;
     inset: 0;
-    /* style-guide.md의 Gradient 1 적용: 왼쪽 검정 → 오른쪽 투명 */
-    background: linear-gradient(to right,
-            rgba(0, 0, 0, 0.7) 0%,
-            rgba(0, 0, 0, 0.3) 100%);
+    background: linear-gradient(to left,
+            var(--color-overlay-light) 0%,
+            var(--color-overlay-dark) 100%);
     transition: background 0.4s ease;
 }
 
-/* 카드 호버 시 오버레이를 흰색으로 변경 */
+/* 카드 호버 시 오버레이를 흰색으로 전환 */
 .creations__card:hover .creations__card-overlay,
 .creations__card:focus-visible .creations__card-overlay {
-    background: rgba(255, 255, 255, 0.7);
+    background: var(--color-hover-overlay);
 }
 
-/* 카드 제목 텍스트 */
+/* 카드 제목 텍스트: 카드 왼쪽 하단에 흰색으로 */
 .creations__card-title {
     position: absolute;
-    /* 카드(부모) 기준으로 절대 위치 */
     bottom: 20px;
-    /* 하단에서 20px 위 (기존 16px에서 조정) */
     left: 20px;
-    /* 왼쪽에서 20px 오른쪽 (기존 24px에서 조정) */
     font-family: var(--font-heading);
-    /* Josefin Sans */
     font-weight: 300;
     font-size: var(--text-preset-5);
     /* 24px */
@@ -649,101 +602,82 @@ body.menu-open {
     text-transform: uppercase;
     color: var(--color-white);
     max-width: 150px;
-    /* 텍스트가 너무 길어지지 않도록 제한 */
     transition: color 0.4s ease;
     z-index: 1;
-    /* 오버레이보다 위에 표시 */
+    /* 오버레이보다 위에 */
 }
 
-/* 카드 호버 시 제목 색상을 검정으로 변경 */
+/* 카드 호버 시 제목 색상 반전 */
 .creations__card:hover .creations__card-title,
 .creations__card:focus-visible .creations__card-title {
     color: var(--color-black);
 }
 
-/* 모바일 SEE ALL 버튼: 갤러리 하단 중앙에 위치 */
+/* 모바일 SEE ALL 버튼 래퍼 */
 .creations__footer {
     display: flex;
     justify-content: center;
-    /* 버튼을 가운데 정렬 */
     margin-top: 32px;
-    /* 그리드(카드 목록)와의 간격을 32px로 설정 (기존 40px에서 조정) */
-}
-
-/* 데스크탑에서는 모바일 SEE ALL 버튼 숨김 */
-.creations__see-all--mobile {
-    display: inline-block;
-    /* 모바일에서는 보임 */
 }
 
 
-/* ==================================================
+/* ======================================================================
    9. 푸터 (Footer)
-   ==================================================
-   검은 배경에 로고, 내비, 소셜 아이콘, 저작권이 담긴 하단 영역.
-   모바일: 세로 가운데 정렬 / 데스크탑: 2행 좌우 레이아웃
+   ======================================================================
+   검은 배경에 로고, 내비, 소셜 아이콘, 저작권이 있는 하단 영역.
+   모바일: 세로 가운데 정렬 / 데스크탑: 좌우 2단 레이아웃
 */
 
 .footer {
     background-color: var(--color-black);
-    /* 검정 배경 */
     padding: 56px;
-    /* 위아래 48px, 좌우 24px */
+    /* 모바일 기본 패딩 */
 }
 
-/* 푸터 내부 컨테이너: 최대 너비 제한 + 가운데 정렬 */
+/* 내부 컨테이너 */
 .footer__inner {
     max-width: 1200px;
     margin: 0 auto;
-
-    /* 모바일: 세로 배치, 가운데 정렬 */
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: var(--spacing-500);
-    /* 좌측 영역과 우측 영역 사이 간격 40px */
+    /* 좌우 영역 간격 40px */
 }
 
-/* 푸터 좌측 영역 (로고 + 링크) */
+/* 좌측 영역: 로고 + 링크 */
 .footer__left {
     display: flex;
     flex-direction: column;
     align-items: center;
-    /* 모바일: 가운데 정렬 */
     gap: 40px;
-    /* 로고와 링크 사이 24px */
 }
 
-/* 푸터 로고 크기 */
+/* 푸터 로고 */
 .footer__logo img {
     width: 144px;
     height: auto;
 }
 
-/* 푸터 내비 링크 목록 */
+/* 푸터 링크 목록 */
 .footer__links {
     display: flex;
     flex-direction: column;
-    /* 모바일: 세로 배치 */
     align-items: center;
-    /* 가운데 정렬 */
     gap: var(--spacing-200);
-    /* 링크 사이 간격 16px */
+    /* 링크 간격 16px */
 }
 
 /* 푸터 개별 링크 */
 .footer__link {
     font-family: var(--font-body);
-    /* Alata */
     font-size: var(--text-preset-6);
-    /* 15px: 본문용 텍스트 스타일 적용 (기존 14px에서 변경하여 가독성 향상) */
     color: var(--color-white);
-    /* 흰색 */
     position: relative;
     transition: opacity 0.3s ease;
 }
 
-/* 푸터 링크 호버 밑줄 효과 */
+/* 푸터 링크 호버 밑줄 */
 .footer__link::after {
     content: '';
     position: absolute;
@@ -759,28 +693,23 @@ body.menu-open {
 .footer__link:hover::after,
 .footer__link:focus-visible::after {
     width: 100%;
-    /* 호버 시 전체 너비로 밑줄 표시 */
 }
 
-/* 푸터 우측 영역 (소셜 + 저작권) */
+/* 우측 영역: 소셜 아이콘 + 저작권 */
 .footer__right {
     display: flex;
     flex-direction: column;
     align-items: center;
-    /* 모바일: 가운데 정렬 */
     gap: var(--spacing-200);
-    /* 소셜 아이콘과 저작권 사이 간격 16px */
 }
 
-/* 소셜 미디어 아이콘 목록 */
+/* 소셜 아이콘 목록 */
 .footer__socials {
     display: flex;
     flex-direction: row;
-    /* 아이콘들을 가로로 나열 */
     width: 144px;
-    /* 푸터 로고와 동일한 144px 너비를 설정하여 시각적 균형을 맞춤 */
+    /* 푸터 로고 너비와 맞춰 시각적 균형 */
     justify-content: space-between;
-    /* 전체 너비 144px 안에서 아이콘들이 양 끝을 기준으로 고르게 배치되도록 설정 */
 }
 
 /* 소셜 아이콘 링크 */
@@ -810,38 +739,275 @@ body.menu-open {
     width: 100%;
 }
 
-/* 저작권 텍스트 */
+/* 저작권 문구 */
 .footer__copy {
     font-family: var(--font-body);
     font-size: var(--text-preset-6);
-    /* 15px: 본문용 텍스트 스타일 적용 (기존 14px에서 변경) */
-    color: rgba(255, 255, 255, 0.5);
-    /* 흰색(White)에 불투명도 50%를 적용하여 은은한 느낌을 줌 (여전히 가독성은 유지하면서 정보를 덜 강조) */
+    color: var(--color-copy-text);
+    /* rgba(255,255,255,0.5) */
 }
 
 
-/* ==================================================
-   10. 반응형 디자인: 태블릿 이상 (768px+)
-   ==================================================
-   화면 너비가 768px 이상이 되면 데스크탑 레이아웃으로 전환.
+/* ======================================================================
+   10. 반응형: 태블릿 이상 (768px+)
+   ======================================================================
+   [미디어 쿼리 핵심 변화 요약]
+   이 분기점(768px)에서 일어나는 주요 레이아웃 변화:
+   ① 헤더: 배경이 모바일용 JPG → 고해상도 데스크탑용 JPG로 교체
+            (더 넓은 화면에 적합한 가로 구도 이미지 사용)
+   ② 내비: 로고 크기 144px → 192px 확대, 햄버거 버튼 크기도 확대
+            (1024px 미만이므로 햄버거 메뉴는 여전히 사용)
+   ③ 히어로: 슬로건 크기 40px(preset-3) → 72px(preset-1)로 대형 제목 표시
+             여백도 mobile(163px/223px) → tablet(130px/123px)로 재조정
+   ④ 인터랙티브: 세로 배치 유지, 텍스트 박스가 음수 마진(-72px)으로 이미지 위에 살짝 겹침
+   ⑤ 갤러리: 1열 유지, 좌우 패딩 24px → 80px으로 확대
+   ⑥ 푸터: 세로 정렬 → 가로 2단(flex-direction: row)으로 전환
 */
 @media (min-width: 768px) {
 
     /* --- 헤더 --- */
     .header {
-        /* 데스크탑용 배경 이미지로 교체 */
         background-image: url('./images/desktop/image-hero.jpg');
-        padding: var(--spacing-800) var(--spacing-800);
-        /* 위아래 64px, 좌우 64px */
+        /* 태블릿부터는 고해상도 배경 이미지 사용 */
+        padding: 64px 80px;
     }
 
     /* --- 내비게이션 --- */
-    .nav__logo img {
-        width: 192px;
-        /* 데스크탑에서 로고 크기 복원 */
+    .nav {
+        margin-bottom: var(--nav-mb-tablet);
+        /* 130px */
     }
 
-    /* 햄버거 버튼 숨기고 데스크탑 메뉴 링크 보이기 */
+    .nav__logo img {
+        width: 192px;
+    }
+
+    /* 태블릿에서도 햄버거 버튼을 사용 (1024px 미만에서) */
+    .nav__hamburger {
+        display: flex;
+        padding: 5.33px 0;
+    }
+
+    .nav__hamburger img {
+        width: 32px;
+        height: 22px;
+    }
+
+    /* 가로 메뉴는 숨김 유지 (1024px에서 보임) */
+    .nav__links {
+        display: none;
+    }
+
+    /* --- 모바일 메뉴 --- */
+    .mobile-menu {
+        padding: 64px 80px 0 80px;
+    }
+
+    .mobile-menu__logo img {
+        width: 192px;
+        height: 32px;
+    }
+
+    .mobile-menu__close img {
+        width: 24.51px;
+        height: 24.51px;
+    }
+
+    .mobile-menu__header {
+        margin-bottom: 127px;
+    }
+
+    /* --- 히어로 --- */
+    .hero {
+        margin-bottom: var(--hero-mb-tablet);
+        /* 123px */
+    }
+
+    .hero__title {
+        font-size: var(--text-preset-1);
+        /* 72px */
+    }
+
+    .hero__text-box {
+        padding: 40px;
+    }
+
+    /* --- 인터랙티브 섹션: 태블릿에서는 세로 배치 유지 --- */
+    .interactive {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 96px 80px;
+        gap: 0;
+    }
+
+    .interactive__picture {
+        width: 100%;
+    }
+
+    .interactive__content {
+        text-align: center;
+        position: relative;
+        z-index: 2;
+        margin-top: -72px;
+        /* 음수 마진으로 이미지 위에 살짝 겹침 */
+        background-color: var(--color-white);
+        padding: 60px 0 0;
+        gap: 24px;
+        margin-left: 0;
+    }
+
+    .interactive__title {
+        font-size: var(--text-preset-2);
+        /* 48px */
+    }
+
+    /* --- 갤러리: 태블릿에서는 1열 유지 --- */
+    .creations {
+        padding: 0 80px 87px 80px;
+    }
+
+    .creations__header {
+        justify-content: center;
+        margin-bottom: 32px;
+    }
+
+    .creations__title {
+        font-size: var(--text-preset-2);
+        /* 48px */
+    }
+
+    .creations__see-all--desktop {
+        display: none;
+    }
+
+    .creations__see-all--mobile {
+        display: inline-block;
+        padding: 13px 40.5px;
+    }
+
+    .creations__grid {
+        grid-template-columns: 1fr;
+        gap: var(--spacing-300)
+    }
+
+    /* 카드 이미지 높이 */
+    .creations__card-image {
+        height: 120px;
+    }
+
+    /* 태블릿 이미지 크롭 기준점 (모바일 이미지 기준) */
+    .creations__item:nth-child(1) .creations__card-image {
+        object-position: 50% 0%;
+    }
+
+    .creations__item:nth-child(2) .creations__card-image {
+        object-position: 50% 60%;
+    }
+
+    .creations__item:nth-child(3) .creations__card-image {
+        object-position: 50% 0%;
+    }
+
+    .creations__item:nth-child(4) .creations__card-image {
+        object-position: 50% 32%;
+    }
+
+    .creations__item:nth-child(5) .creations__card-image {
+        object-position: 50% 100%;
+    }
+
+    .creations__item:nth-child(6) .creations__card-image {
+        object-position: 50% 50%;
+    }
+
+    .creations__item:nth-child(7) .creations__card-image {
+        object-position: 50% 100%;
+    }
+
+    .creations__item:nth-child(8) .creations__card-image {
+        object-position: 50% 0%;
+    }
+
+    .creations__card-title {
+        font-size: var(--text-preset-5);
+        /* 24px */
+        bottom: 20px;
+        left: 37px;
+    }
+
+    /* --- 푸터: 가로 2단 레이아웃으로 전환 --- */
+    .footer {
+        padding: 43.5px 80px;
+    }
+
+    .footer__inner {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: flex-end;
+        gap: 24px;
+    }
+
+    .footer__left {
+        align-items: flex-start;
+        gap: 24px;
+    }
+
+    .footer__links {
+        flex-direction: row;
+        align-items: center;
+        gap: 16px;
+    }
+
+    .footer__right {
+        align-items: flex-end;
+        gap: 24px;
+    }
+
+    .footer__social-link {
+        width: 24px;
+        height: 24px;
+        padding: 0;
+    }
+
+    .footer__social-link img {
+        width: 24px;
+        height: 24px;
+    }
+}
+
+
+/* ======================================================================
+   11. 반응형: 데스크탑 (1024px+)
+   ======================================================================
+   [미디어 쿼리 핵심 변화 요약]
+   이 분기점(1024px)에서 일어나는 주요 레이아웃 변화:
+   ① 내비: 햄버거 버튼 완전히 숨김(display:none), 가로 메뉴 링크 표시(display:flex)
+            → 모바일 메뉴 오버레이 필요 없는 구조로 전환
+   ② 헤더 패딩: 상하 64px, 좌우 165px (디자인 시안 데스크탑 1440px 기준 좌우 여백)
+   ③ 인터랙티브: 1열 세로 배치 → 이미지(731px 고정)+텍스트 박스(absolute 겹침) 구조
+               텍스트 박스가 이미지 우측 하단에 흰 배경으로 올라타는 디자인
+   ④ 갤러리: 1열 → repeat(4, 1fr) 4열 2행 CSS Grid로 전환
+             카드 높이 120px → 450px 세로형 카드로 변경
+             그라디언트 방향: 좌→우 → 위→아래 (세로형 카드에 어울리는 방향)
+   ⑤ 제목 옆 SEE ALL 버튼: 모바일 하단 버튼 숨김, 데스크탑 제목 옆 버튼 표시
+   ⑥ 푸터: 좌우 패딩 165px로 헤더와 시각적 정렬 일치
+*/
+@media (min-width: 1024px) {
+
+    /* --- 헤더 --- */
+    .header {
+        padding: var(--spacing-800) 165px;
+        /* 상하 64px, 좌우 165px: 데스크탑 시안 기준 좌우 여백 고정값 */
+    }
+
+    /* --- 내비게이션: 햄버거→가로 메뉴로 교체 --- */
+    .nav {
+        margin-bottom: var(--nav-mb-desktop);
+        /* 127px */
+    }
+
     .nav__hamburger {
         display: none;
         /* 데스크탑에서 햄버거 버튼 숨김 */
@@ -849,147 +1015,186 @@ body.menu-open {
 
     .nav__links {
         display: flex;
-        /* 데스크탑에서 내비 링크 목록 보임 */
+        /* 가로 메뉴 링크 표시 */
+    }
+
+    .nav__link {
+        font-size: var(--text-preset-6);
+        /* 15px */
+        padding: 0;
+    }
+
+    .nav__link::after {
+        bottom: -8px;
+        /* 글자와 밑줄 사이에 8px 여유 */
     }
 
     /* --- 히어로 --- */
-    .hero__title {
-        font-size: var(--text-preset-3);
-        /* 데스크탑에서도 동일하게 40px 크기 유지 */
+    .hero {
+        max-width: var(--hero-max-width-desktop);
+        /* 650px */
     }
 
-    /* --- 인터랙티브 섹션 --- */
+    .hero__text-box {
+        padding: 42px 40px;
+    }
+
+    /* --- 인터랙티브 섹션: 절대 위치 겹침 레이아웃 ---
+       이미지(731px 고정) 위에 흰 텍스트 박스가 오른쪽 하단을 덮음 */
     .interactive {
+        display: block;
+        /* 그리드/플렉스 제약 해제 */
         position: relative;
-        flex-direction: row;
-        /* 데스크탑: 이미지 왼쪽, 텍스트 오른쪽 */
-        align-items: flex-end;
-        /* 이미지와 텍스트 하단 정렬 */
-        padding: var(--spacing-1000) var(--spacing-800);
-        gap: 0;
+        /* 자식의 absolute 포지션 기준점 */
+        padding: 160px 165px;
+        /* 상하 160px, 좌우 165px: 데스크탑 시안 기준 섹션 여백 */
+        padding-bottom: 184px;
+        /* 텍스트 박스가 안으로 겹칠 공간 확보 */
     }
 
-    /* VR 이미지: 전체 너비의 60% 차지 */
     .interactive__picture {
-        width: 60%;
-        flex-shrink: 0;
-        /* 이미지 너비가 줄어들지 않도록 */
+        display: block;
+        width: var(--interactive-image-width);
+        /* 731px: 데스크탑 시안에서 확인된 이미지 고정 너비 */
+        z-index: 1;
     }
 
-    /* 텍스트 박스: 이미지 위로 살짝 겹쳐서 배치 */
+    .interactive__image {
+        width: 100%;
+        height: auto;
+        display: block;
+    }
+
     .interactive__content {
-        text-align: left;
-        /* 데스크탑: 왼쪽 정렬 */
-        position: relative;
-        left: -var(--spacing-800);
-        /* 이미지와 겹치도록 왼쪽으로 이동 */
+        position: absolute;
+        right: 165px;
+        bottom: 183px;
+        width: var(--interactive-content-width);
+        /* 541px: 디자인 시안 데스크탑 기준 텍스트 박스 너비 */
         background-color: var(--color-white);
-        /* 흰 배경으로 이미지와 구분 */
-        padding: var(--spacing-800) 0 0 var(--spacing-800);
-        /* 위쪽과 왼쪽 패딩 */
-        margin-left: -80px;
-        /* 이미지와 겹치는 정도 조절 */
-        flex: 1;
+        padding: 96px 0 0 96px;
+        /* 96px: 텍스트 박스 내 좌상단 패딩 (시안 데스크탑 기준 여백) */
+        z-index: 2;
+        /* 이미지 위에 표시 */
+        text-align: left;
+        align-items: flex-start;
+        margin: 0;
+        /* 태블릿 음수 마진 초기화 */
+        gap: 24px;
     }
 
-    /* --- 갤러리 섹션 --- */
+    .interactive__title {
+        font-size: var(--text-preset-2);
+        /* 48px */
+    }
+
+    /* --- 갤러리: 4열 그리드 + 세로형 카드로 전환 --- */
     .creations {
-        padding: 0 var(--spacing-800) var(--spacing-1000);
+        padding: 0 160px 182px 160px;
+        /* 좌우 160px: 데스크탑 시안 기준 갤러리 좌우 여백 */
     }
 
-    /* 제목과 SEE ALL 버튼을 양쪽 끝으로 배치 */
     .creations__header {
         justify-content: space-between;
-        /* 데스크탑: 제목 왼쪽, 버튼 오른쪽 */
-        align-items: center;
+        /* 제목 왼쪽, 버튼 오른쪽 */
+        margin-bottom: 80px;
     }
 
-    /* 데스크탑 SEE ALL 버튼 보이기 */
-    .creations__see-all--desktop {
-        display: inline-block;
-    }
-
-    /* 모바일 SEE ALL 버튼 숨기기 */
+    /* 모바일 하단 버튼 숨기고 우측 상단 버튼 표시 */
     .creations__see-all--mobile {
         display: none;
     }
 
-    /* 갤러리 그리드: 4열 2행 */
+    .creations__see-all--desktop {
+        display: inline-block;
+        padding: 13px 40.5px;
+    }
+
+    .creations__title {
+        font-size: var(--text-preset-2);
+        /* 48px */
+    }
+
+    /* 4열 그리드 */
     .creations__grid {
         grid-template-columns: repeat(4, 1fr);
-        /* 4등분된 열 */
-        gap: var(--spacing-300);
-        /* 카드 사이 간격 24px */
+        gap: 32px;
     }
 
-    /* 데스크탑 카드 이미지 높이 */
+    /* 세로형 카드 이미지 */
     .creations__card-image {
         height: 450px;
-        /* 데스크탑에서 카드 높이 */
+        object-fit: cover;
     }
 
-    /* 카드 제목 텍스트: 데스크탑에서 더 크게 */
+    /* 데스크탑 이미지 크롭 기준점 */
+    .creations__item:nth-child(1) .creations__card-image {
+        object-position: 50% 50%;
+    }
+
+    .creations__item:nth-child(2) .creations__card-image {
+        object-position: 50% 50%;
+    }
+
+    .creations__item:nth-child(3) .creations__card-image {
+        object-position: 50% 30%;
+    }
+
+    .creations__item:nth-child(4) .creations__card-image {
+        object-position: 50% 50%;
+    }
+
+    .creations__item:nth-child(5) .creations__card-image {
+        object-position: 50% 50%;
+    }
+
+    .creations__item:nth-child(6) .creations__card-image {
+        object-position: 50% 50%;
+    }
+
+    .creations__item:nth-child(7) .creations__card-image {
+        object-position: 50% 50%;
+    }
+
+    .creations__item:nth-child(8) .creations__card-image {
+        object-position: 50% 50%;
+    }
+
+    /* 데스크탑: 카드 그라디언트 방향 위→아래로 변경 (세로형 카드에 적합) */
+    .creations__card-overlay {
+        background: linear-gradient(to bottom,
+                var(--color-overlay-light) 0%,
+                var(--color-overlay-dark) 100%);
+    }
+
+    /* 5번째 카드 제목: 긴 텍스트 줄바꿈 제어 */
+    .creations__item:nth-child(5) .creations__card-title {
+        width: 164px;
+        max-width: none;
+        /* 모바일에서 설정한 max-width: 150px 해제 */
+    }
+
+    /* 데스크탑 카드 제목 크기/위치 */
     .creations__card-title {
         font-size: var(--text-preset-4);
         /* 32px */
-        max-width: 180px;
-        bottom: var(--spacing-300);
-        left: var(--spacing-300);
+        bottom: 32px;
+        left: 40px;
     }
 
-    /* --- 푸터: 2행 레이아웃 --- */
-    .footer__inner {
-        flex-direction: row;
-        /* 가로 배치 */
-        justify-content: space-between;
-        /* 좌측과 우측 영역을 양 끝으로 */
-        align-items: flex-end;
-        /* 하단 정렬 */
-    }
-
-    .footer__left {
-        align-items: flex-start;
-        /* 데스크탑: 왼쪽 정렬 */
-    }
-
-    .footer__links {
-        flex-direction: row;
-        /* 데스크탑: 가로 배치 */
-        align-items: center;
-        gap: var(--spacing-300);
-    }
-
-    .footer__right {
-        align-items: flex-end;
-        /* 데스크탑 우측 정렬 */
-    }
-}
-
-
-/* ==================================================
-   11. 반응형 디자인: 대형 화면 (1200px+)
-   ==================================================
-   더 큰 화면에서도 레이아웃이 깨지지 않도록 최대 너비 제한.
-*/
-@media (min-width: 1200px) {
-
-    /* 헤더 좌우 패딩 더 늘림 */
-    .header {
-        padding: var(--spacing-800) 10%;
-    }
-
-    /* 인터랙티브 섹션 패딩 */
-    .interactive {
-        padding: var(--spacing-1000) 10%;
-    }
-
-    /* 갤러리 패딩 */
-    .creations {
-        padding: 0 10% var(--spacing-1000);
-    }
-
-    /* 푸터 패딩 */
+    /* --- 푸터 --- */
     .footer {
-        padding: var(--spacing-600) 10%;
+        padding: 45px 165px 32px 165px;
+        /* 좌우 165px: 헤더/인터랙티브 섹션과 동일한 좌우 기준선 유지 */
+    }
+
+    .footer__links,
+    .footer__social-icons {
+        gap: 32px;
+    }
+
+    .footer__link::after {
+        bottom: -8px;
+        /* 내비 링크와 동일하게 밑줄 위치 조정 */
     }
 }

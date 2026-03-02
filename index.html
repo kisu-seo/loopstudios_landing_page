@@ -55,8 +55,23 @@
       </ul>
 
       <!-- 모바일용 햄버거 버튼 (데스크탑에선 숨겨짐) -->
-      <!-- aria-expanded: 메뉴가 열려있는지(true) 닫혀있는지(false) 스크린 리더에 알림 -->
-      <!-- aria-controls: 이 버튼이 어떤 요소를 제어하는지 연결 -->
+      <!--
+        [접근성(a11y) 심층 설명]
+        aria-expanded="false":
+          스크린 리더는 이 버튼을 "모바일 메뉴 열기, 접힘" 이라고 읽습니다.
+          JS(openMenu/closeMenu)가 이 값을 "true/false"로 바꿔주면,
+          스크린 리더 사용자도 메뉴가 열렸는지 닫혔는지 즉시 알 수 있습니다.
+          (마치 엘리베이터 문이 '열림' 신호를 시각장애인에게 알려주는 것과 같습니다.)
+
+        aria-controls="mobile-menu":
+          "이 버튼은 id가 'mobile-menu'인 요소를 제어합니다"를 선언합니다.
+          스크린 리더가 버튼과 메뉴 패널의 관계를 명확히 파악하여,
+          키보드 사용자가 직접 메뉴 영역으로 이동할 수 있도록 안내합니다.
+
+        이미지의 aria-hidden="true":
+          햄버거 아이콘(☰)은 시각적 장식일 뿐이므로, 스크린 리더가 읽지 않도록 숨깁니다.
+          버튼의 목적은 이미 aria-label로 충분히 설명되어 있습니다.
+      -->
       <button class="nav__hamburger" id="hamburger-btn" aria-label="모바일 메뉴 열기" aria-expanded="false"
         aria-controls="mobile-menu">
         <img src="./images/icon-hamburger.svg" alt="" aria-hidden="true" width="24" height="16">
@@ -78,6 +93,22 @@
        ====================================================
        햄버거 버튼 클릭 시 화면 전체를 덮는 검은색 메뉴판.
        JS로 'is-open' 클래스를 붙였다 뗐다 해서 열고 닫음.
+  -->
+  <!--
+    [접근성(a11y) 심층 설명]
+    role="dialog":
+      이 요소가 '대화 상자(모달 창)' 역할임을 스크린 리더에 알립니다.
+      스크린 리더는 사용자가 이 패널에 진입했을 때 "모달 열림"을 알려줍니다.
+
+    aria-modal="true":
+      활성화된 동안 배경의 다른 콘텐츠가 스크린 리더에 읽히지 않도록,
+      포커스(초점)를 이 메뉴 안에 가두는 역할을 보조 기술에 알립니다.
+
+    aria-hidden="true" (초기 상태):
+      메뉴가 닫혀있을 때는 스크린 리더가 이 영역 전체를 건너뜁니다.
+      JS(openMenu)가 aria-hidden="false"로 바꿔줄 때만 읽힙니다.
+      → 결과: 마우스 사용자에겐 보이지 않고, 스크린 리더에도 읽히지 않아
+        완전히 비활성화된 안전한 상태를 만듭니다.
   -->
   <div class="mobile-menu" id="mobile-menu" role="dialog" aria-modal="true" aria-label="모바일 내비게이션 메뉴"
     aria-hidden="true">
@@ -114,8 +145,21 @@
          모바일: 세로 배치 / 데스크탑: 이미지 왼쪽, 텍스트 오른쪽
     -->
     <section class="interactive" aria-labelledby="interactive-title">
-      <!-- VR 체험 이미지: 모바일용은 mobile 폴더, 데스크탑용은 desktop 폴더 -->
-      <!-- <picture> 태그: 화면 크기에 따라 적절한 이미지를 자동으로 선택 -->
+      <!--
+        [아트 디렉션(Art Direction) 심층 설명]
+        <picture> 태그는 단순히 이미지 크기만 바꾸는 것이 아니라,
+        화면 크기에 따라 '완전히 다른 이미지'를 보여주는 기술입니다.
+
+        모바일용(image-interactive.jpg in mobile/):
+          → 세로 구도로 잘린 이미지 (1열 세로 레이아웃에 최적화)
+
+        데스크탑용(image-interactive.jpg in desktop/):
+          → 가로 구도로 잘린 이미지 (이미지+텍스트 가로 배치에 최적화)
+
+        브라우저는 media="(min-width: 768px)" 조건을 확인해서
+        화면이 768px 이상이면 <source>의 이미지를, 그 미만이면 <img>의 이미지를 사용합니다.
+        → 불필요하게 큰 이미지를 모바일에서 내려받는 낭비를 방지합니다.
+      -->
       <picture class="interactive__picture">
         <!-- 화면 너비가 768px 이상이면 데스크탑 이미지를 사용 -->
         <source srcset="./images/desktop/image-interactive.jpg" media="(min-width: 768px)">
@@ -162,7 +206,7 @@
           <a href="#" class="creations__card" aria-label="Deep Earth VR 체험 보기">
             <!-- 모바일/데스크탑 이미지 반응형 처리 -->
             <picture>
-              <source srcset="./images/desktop/image-deep-earth.jpg" media="(min-width: 768px)">
+              <source srcset="./images/desktop/image-deep-earth.jpg" media="(min-width: 1024px)">
               <img class="creations__card-image" src="./images/mobile/image-deep-earth.jpg" alt="심해 지구 내부를 탐험하는 VR 체험"
                 loading="lazy">
             </picture>
@@ -177,7 +221,7 @@
         <li class="creations__item">
           <a href="#" class="creations__card" aria-label="Night Arcade VR 체험 보기">
             <picture>
-              <source srcset="./images/desktop/image-night-arcade.jpg" media="(min-width: 768px)">
+              <source srcset="./images/desktop/image-night-arcade.jpg" media="(min-width: 1024px)">
               <img class="creations__card-image" src="./images/mobile/image-night-arcade.jpg"
                 alt="밤의 아케이드를 배경으로 한 VR 체험" loading="lazy">
             </picture>
@@ -190,7 +234,7 @@
         <li class="creations__item">
           <a href="#" class="creations__card" aria-label="Soccer Team VR 체험 보기">
             <picture>
-              <source srcset="./images/desktop/image-soccer-team.jpg" media="(min-width: 768px)">
+              <source srcset="./images/desktop/image-soccer-team.jpg" media="(min-width: 1024px)">
               <img class="creations__card-image" src="./images/mobile/image-soccer-team.jpg"
                 alt="축구팀 선수들과 함께하는 VR 스포츠 체험" loading="lazy">
             </picture>
@@ -203,7 +247,7 @@
         <li class="creations__item">
           <a href="#" class="creations__card" aria-label="The Grid VR 체험 보기">
             <picture>
-              <source srcset="./images/desktop/image-grid.jpg" media="(min-width: 768px)">
+              <source srcset="./images/desktop/image-grid.jpg" media="(min-width: 1024px)">
               <img class="creations__card-image" src="./images/mobile/image-grid.jpg" alt="미래적인 그리드 세계를 탐험하는 VR 체험"
                 loading="lazy">
             </picture>
@@ -216,7 +260,7 @@
         <li class="creations__item">
           <a href="#" class="creations__card" aria-label="From Up Above VR 체험 보기">
             <picture>
-              <source srcset="./images/desktop/image-from-above.jpg" media="(min-width: 768px)">
+              <source srcset="./images/desktop/image-from-above.jpg" media="(min-width: 1024px)">
               <img class="creations__card-image" src="./images/mobile/image-from-above.jpg" alt="하늘 위에서 아래를 내려다보는 VR 체험"
                 loading="lazy">
             </picture>
@@ -229,7 +273,7 @@
         <li class="creations__item">
           <a href="#" class="creations__card" aria-label="Pocket Borealis VR 체험 보기">
             <picture>
-              <source srcset="./images/desktop/image-pocket-borealis.jpg" media="(min-width: 768px)">
+              <source srcset="./images/desktop/image-pocket-borealis.jpg" media="(min-width: 1024px)">
               <img class="creations__card-image" src="./images/mobile/image-pocket-borealis.jpg"
                 alt="손안에서 즐기는 오로라 VR 체험" loading="lazy">
             </picture>
@@ -242,7 +286,7 @@
         <li class="creations__item">
           <a href="#" class="creations__card" aria-label="The Curiosity VR 체험 보기">
             <picture>
-              <source srcset="./images/desktop/image-curiosity.jpg" media="(min-width: 768px)">
+              <source srcset="./images/desktop/image-curiosity.jpg" media="(min-width: 1024px)">
               <img class="creations__card-image" src="./images/mobile/image-curiosity.jpg" alt="호기심을 자극하는 탐험 VR 체험"
                 loading="lazy">
             </picture>
@@ -255,7 +299,7 @@
         <li class="creations__item">
           <a href="#" class="creations__card" aria-label="Make It Fisheye VR 체험 보기">
             <picture>
-              <source srcset="./images/desktop/image-fisheye.jpg" media="(min-width: 768px)">
+              <source srcset="./images/desktop/image-fisheye.jpg" media="(min-width: 1024px)">
               <img class="creations__card-image" src="./images/mobile/image-fisheye.jpg" alt="어안렌즈 효과로 바라보는 독특한 VR 체험"
                 loading="lazy">
             </picture>
